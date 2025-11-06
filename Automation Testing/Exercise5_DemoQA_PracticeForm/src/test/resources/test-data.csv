@@ -1,0 +1,3 @@
+firstName,lastName,email,gender,mobile,subject,hobbies,expected
+John,Doe,john@example.com,Male,1234567890,Math,"Sports,Music",success
+,,invalid-email,Female,123,,"Sports",error
