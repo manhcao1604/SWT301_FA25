@@ -1,0 +1,22 @@
+<nav th:fragment="navigation" class="navbar navbar-light bg-light mb-4">
+    <div class="container">
+        <div class="d-flex w-100">
+            <form th:action="@{/books/search}" method="get" class="d-flex me-3">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="Search books...">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" th:href="@{/books}">All Books</a></li>
+                    <li><a class="dropdown-item" th:href="@{/books/sale}">On Sale</a></li>
+                    <li><a class="dropdown-item" th:href="@{/books/bestsellers}">Bestsellers</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

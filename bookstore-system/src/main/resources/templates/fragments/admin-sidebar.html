@@ -1,0 +1,33 @@
+<div th:fragment="admin-sidebar" class="bg-light border-end" style="width: 250px; min-height: 100vh;">
+    <div class="p-3">
+        <h5 class="text-center">Admin Panel</h5>
+        <hr>
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin}">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/books}">
+                    <i class="fas fa-book me-2"></i>Books
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/categories}">
+                    <i class="fas fa-tags me-2"></i>Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/orders}">
+                    <i class="fas fa-shopping-cart me-2"></i>Orders
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/users}">
+                    <i class="fas fa-users me-2"></i>Users
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

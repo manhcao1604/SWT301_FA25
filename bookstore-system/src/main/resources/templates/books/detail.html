@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${book.title + ' - BookStore'}">Book Details - BookStore</title>
+    <th:block th:insert="~{fragments/header :: head}"></th:block>
+    <style>
+        .book-image-main {
+            max-height: 500px;
+            object-fit: contain;
+        }
+        .related-book-image {
+            height: 150px;
+            object-fit: cover;
+        }
+        .sale-badge {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<th:block th:insert="~{fragments/header :: header}"></th:block>
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/books}">Books</a></li>
+            <li class="breadcrumb-item active" th:text="${book.title}"></li>
+        </ol>
+    </nav>
+
+    <!-- Book Details -->
+    <div class="row">
+        <!-- Book Image -->
+        <div class="col-md-6 mb-4">
+            <div class="position-relative">
+                <img th:src="${book.coverImage}" class="img-fluid book-image-main rounded shadow"
+                     th:alt="${book.title}"
+                     onerror="this.src='https://via.placeholder.com/400x500/007bff/ffffff?text=No+Image'">
+                <th:block th:if="${book.onSale}">
+                        <span class="position-absolute top-0 end-0 sale-badge badge bg-danger m-2">
+                            SALE -<span th:text="${#numbers.formatDecimal(book.discountPercentage, 0, 0)}">0</span>%
+                        </span>
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Book Info -->
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3" th:text="${book.title}"></h1>
+            <p class="text-muted mb-2">by <span th:text="${book.author}"></span></p>
+
+            <!-- Rating -->
+            <div class="mb-3">
+                <div class="d-flex align-items-center">
+                    <div class="text-warning me-2">
+                        <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, 5)}"
+                           th:classappend="${i <= book.averageRating} ? 'fas' : 'far'"></i>
+                    </div>
+                    <span class="text-muted" th:text="'(' + book.reviewCount + ' reviews)'"></span>
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+                <th:block th:if="${book.onSale}">
+                    <div class="d-flex align-items-center">
+                            <span class="text-muted text-decoration-line-through h5 me-3"
+                                  th:text="'₫' + ${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                        <span class="text-danger h4 fw-bold"
+                              th:text="'₫' + ${#numbers.formatDecimal(book.currentPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+                </th:block>
+                <th:block th:unless="${book.onSale}">
+                        <span class="h4 fw-bold text-primary"
+                              th:text="'₫' + ${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                </th:block>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="mb-4">
+                <th:block th:if="${book.inStock}">
+                    <span class="badge bg-success me-2"><i class="fas fa-check"></i> In Stock</span>
+                    <span class="text-muted" th:text="'Only ' + book.stockQuantity + ' left'"></span>
+                </th:block>
+                <th:block th:unless="${book.inStock}">
+                    <span class="badge bg-danger"><i class="fas fa-times"></i> Out of Stock</span>
+                </th:block>
+            </div>
+
+            <!-- Add to Cart -->
+            <div class="mb-4" th:if="${book.inStock}">
+                <form th:action="@{/cart/add}" method="post" class="d-flex align-items-center">
+                    <input type="hidden" name="bookId" th:value="${book.id}">
+                    <div class="input-group me-3" style="width: 140px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1"
+                               th:max="${book.stockQuantity}" class="form-control text-center">
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                    </button>
+                </form>
+            </div>
+
+            <!-- Book Details -->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Book Details</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li th:if="${book.isbn}"><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></li>
+                        <li th:if="${book.publisher}"><strong>Publisher:</strong> <span th:text="${book.publisher}"></span></li>
+                        <li th:if="${book.pages}"><strong>Pages:</strong> <span th:text="${book.pages}"></span></li>
+                        <li th:if="${book.language}"><strong>Language:</strong> <span th:text="${book.language}"></span></li>
+                        <li th:if="${book.categories}">
+                            <strong>Categories:</strong>
+                            <span th:each="cat, iter : ${book.categories}">
+                                    <a th:href="@{/books/category/{id}(id=${cat.id})}" th:text="${cat.name}"></a>
+                                    <span th:if="${!iter.last}">, </span>
+                                </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Description</h5>
+                </div>
+                <div class="card-body">
+                    <p th:text="${book.description ?: 'No description available.'}"
+                       class="card-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Books -->
+    <div class="row mt-5" th:if="${relatedBooks and !relatedBooks.empty}">
+        <div class="col-12">
+            <h4 class="fw-bold mb-4">Related Books</h4>
+            <div class="row">
+                <div th:each="relatedBook : ${relatedBooks}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <img th:src="${relatedBook.coverImage}" class="card-img-top related-book-image"
+                             th:alt="${relatedBook.title}"
+                             onerror="this.src='https://via.placeholder.com/200x250/007bff/ffffff?text=No+Image'">
+                        <div class="card-body">
+                            <h6 class="card-title" th:text="${relatedBook.title}"></h6>
+                            <p class="card-text text-muted small" th:text="${relatedBook.author}"></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary"
+                                          th:text="'₫' + ${#numbers.formatDecimal(relatedBook.currentPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+                                <a th:href="@{/books/{id}(id=${relatedBook.id})}" class="btn btn-outline-primary btn-sm">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function decreaseQuantity() {
+        const input = document.getElementById('quantity');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function increaseQuantity() {
+        const input = document.getElementById('quantity');
+        const max = parseInt(input.getAttribute('max'));
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+</script>
+
+<th:block th:insert="~{fragments/footer :: footer}"></th:block>
+</body>
+</html>

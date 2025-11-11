@@ -1,0 +1,50 @@
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 20px;
+    background: #f8f9fa;
+}
+
+.stats-card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stats-icon {
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+.data-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+.form-container {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
